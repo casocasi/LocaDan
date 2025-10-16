@@ -1,1 +1,1772 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>LocaDan Pro — Gestion locative</title>
 
+<style>
+  :root{
+    --primary:#1e88e5; --muted:#6b7280; --bg:#f6f8fb; --card:#ffffff; --accent:#0f172a; --danger:#e53e3e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:var(--accent)}
+  header{background:linear-gradient(90deg,var(--primary),#2b6cb0);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+  header h1{margin:0;font-size:18px}
+  header .right{display:flex;gap:12px;align-items:center}
+  .container{max-width:1200px;margin:18px auto;padding:12px}
+  nav{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  nav button{background:var(--card);border:1px solid rgba(15,23,42,0.06);padding:8px 12px;border-radius:8px;cursor:pointer}
+  nav button.active{background:linear-gradient(90deg,#e6f0ff,#eef6ff);color:var(--primary);font-weight:600}
+  .card{background:var(--card);border-radius:10px;padding:12px;box-shadow:0 8px 20px rgba(15,23,42,0.04)}
+  form.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+  form .field{flex:1 1 220px;min-width:180px}
+  input[type=text],input[type=number],input[type=email],select,textarea,input[type=date]{width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9ef}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  .btn{background:var(--primary);color:#fff;padding:8px 10px;border-radius:8px;border:none;cursor:pointer}
+  .btn.secondary{background:#eef6ff;color:var(--primary);border:1px solid rgba(30,136,229,0.12)}
+  .btn.danger{background:var(--danger);color:#fff}
+  table{width:100%;border-collapse:collapse;margin-top:12px}
+  th,td{padding:10px;border-bottom:1px solid #f1f5f9;text-align:left}
+  th{color:var(--muted);font-size:13px}
+  .actions button{margin-right:6px}
+  .muted{color:var(--muted)}
+  @media(max-width:900px){form.row{flex-direction:column}}
+  /* small helpers */
+  .small{font-size:13px;padding:6px 8px;border-radius:6px}
+  
+  /* Survol des boutons */
+.btn:hover {
+  background-color: #FFD700; /* jaune moyen */
+  color: black;
+}
+
+/* Survol des lignes du tableau Paiements */
+#tblPaiements tbody tr:hover {
+  background-color: #FFD700; /* jaune moyen */
+  color: black;
+}
+  
+</style>
+<!-- 🌟 Améliorations visuelles pour LocaDan Pro -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  /* === Police et base === */
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f9fafc;
+    color: #222;
+    margin: 0;
+  }
+
+  /* === Bandeau principal === */
+  #header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 22px;
+    background: #1E90FF;
+    color: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+  #header img {
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+  }
+
+  /* === Badge devise === */
+  #header div:last-child {
+    background: #FFD700;
+    color: #222;
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-weight: bold;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+
+  /* === Boutons === */
+  .btn {
+    border-radius: 8px;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn:hover {
+    transform: scale(1.03);
+    opacity: 0.92;
+  }
+
+  /* === Tableaux === */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+  }
+  th, td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  th {
+    background-color: #f0f6ff;
+    text-align: left;
+  }
+  tbody tr:hover {
+    background-color: #f2f8ff;
+  }
+
+  /* === Cartes === */
+  .card {
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    background: white;
+    transition: transform 0.15s;
+  }
+  .card:hover {
+    transform: scale(1.01);
+  }
+
+  /* === Formulaires === */
+  input, select, textarea {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 14px;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: #1E90FF;
+    outline: none;
+    box-shadow: 0 0 4px rgba(30,144,255,0.3);
+  }
+
+  /* === Animation des formulaires === */
+  [id$="FormWrap"] {
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* === Navigation === */
+  #mainNav {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  #mainNav button {
+    background: #1E90FF;
+    color: white;
+    border-radius: 6px;
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  #mainNav button.active, #mainNav button:hover {
+    background: #0d6efd;
+  }
+
+  /* === Pieds de tableau / totaux === */
+  tfoot td {
+    font-weight: bold;
+    background-color: #f8faff;
+  }
+
+  /* === Amélioration des sections === */
+  section {
+    margin-top: 16px;
+    background: white;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  /* === Effet général === */
+  .muted {
+    color: #666;
+  }
+  
+  body[data-theme='dark'] {
+  background-color: #121212;
+  color: #f0f0f0;
+}
+
+body[data-theme='dark'] .card {
+  background-color: #1e1e1e;
+  color: #e5e5e5;
+}
+
+body[data-theme='dark'] table {
+  background-color: #2a2a2a;
+}
+
+body[data-theme='dark'] input,
+body[data-theme='dark'] select,
+body[data-theme='dark'] textarea {
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+}
+</style>
+
+<style>
+/* Corrige les fonds en mode sombre */
+html[data-theme="dark"], 
+html[data-theme="dark"] body {
+  background-color: #0f172a !important;
+  color: #e6eef8 !important;
+}
+
+/* Facultatif : adoucir la transition */
+html, body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+</style>
+
+<!-- 🌟 Fin du pack visuel -->
+
+</head>
+
+<body>
+
+<!-- ===== BANDEAU PRINCIPAL ===== -->
+
+<header class="topbar" style="
+  background:#1e3a8a;
+  color:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px 16px;
+  font-size:18px;
+">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:22px;">🏠</span>
+    <strong>LocaDan Pro — Gestion locative</strong>
+  </div>
+  
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div style="display:flex;align-items:center;gap:4px;">
+      <span>Devise :</span>
+      <span id="currentCurrencySymbol">€</span>
+    </div>	    
+
+    <!-- Bouton Export / Import -->
+    <button class="btn secondary small" onclick="exportData()">💾 Exporter</button>
+    <button class="btn secondary small" onclick="importData()">📂 Importer</button>
+  </div>
+  
+</header>
+
+<script>
+
+</script>
+
+</script>
+</body>
+</html>
+
+  <!-- Ton container principal -->
+  <div class="container">
+    <!-- Ici viennent toutes les sections Biens / Locataires / Baux / Paiements / Rapports -->
+  </div>
+</body>
+  <!-- Ton container principal -->
+  <div class="container">
+    <!-- Ici viennent toutes les sections Biens / Locataires / Baux / Paiements / Rapports -->
+  </div>
+</body>
+
+<div class="container">
+  <nav id="mainNav">
+    <button id="nav-proprietaires" class="active" onclick="showSection('proprietaires')">Propriétaires</button>
+    <button id="nav-biens" onclick="showSection('biens')">Biens</button>
+    <button id="nav-locataires" onclick="showSection('locataires')">Locataires</button>
+    <button id="nav-baux" onclick="showSection('baux')">Baux</button>
+    <button id="nav-paiements" onclick="showSection('paiements')">Paiements</button>
+    <button id="nav-rapports" onclick="showSection('rapports')">Rapports</button>
+    <button id="nav-parametres" onclick="showSection('parametres')">Paramètres</button>
+  </nav>
+
+  <!-- PROPRIETAIRES -->
+  
+  <section id="proprietaires" class="card" style="display:block">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2>Propriétaires</h2>
+      <div><button class="btn" onclick="openNewProprietaire()">+ Nouveau propriétaire</button></div>
+    </div>
+
+    <div id="proprioFormWrap" style="display:none;margin-top:12px" class="card">
+      <form id="formProprietaire" class="row" onsubmit="event.preventDefault(); saveProprietaire()">
+        <input type="hidden" id="proprioId">
+        <div class="field">
+          <label for="proprioNom">Nom</label>
+          <input id="proprioNom" type="text" required>
+        </div>
+        <div class="field">
+          <label for="proprioPrenom">Prénom</label>
+          <input id="proprioPrenom" type="text" required>
+        </div>
+        <div class="field">
+          <label for="proprioTel">Téléphone</label>
+          <input id="proprioTel" type="text">
+        </div>
+        <div class="field">
+          <label for="proprioEmail">Email</label>
+          <input id="proprioEmail" type="email">
+        </div>
+        <div style="flex-basis:100%;display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+          <button type="button" class="btn secondary" onclick="closeProprioForm()">Annuler</button>
+          <button type="submit" class="btn">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="table-container" style="margin-top:12px">
+      <table id="tblProprietaires">
+        <thead><tr><th>Nom</th><th>Prénom</th><th>Téléphone</th><th>Email</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+	
+  </section>
+
+  <!-- BIENS -->
+  
+  <section id="biens" class="card" style="display:none;margin-top:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2>Biens</h2>
+      <div><button class="btn" onclick="openNewBien()">+ Nouveau bien</button></div>
+    </div>
+
+    <div id="bienFormWrap" style="display:none;margin-top:12px" class="card">
+      <form id="formBien" class="row" onsubmit="event.preventDefault(); saveBien()">
+        <input type="hidden" id="bienId">
+        <div class="field">
+          <label for="bienNom">Nom</label>
+          <input id="bienNom" type="text" required>
+        </div>
+        <div class="field">
+          <label for="bienAdresse">Adresse</label>
+          <input id="bienAdresse" type="text" required>
+        </div>
+        <div class="field">
+          <label for="bienType">Type</label>
+          <select id="bienType">
+            <option>Appartement</option><option>Maison</option><option>Studio</option><option>Local</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="bienSurface">Surface (m²)</label>
+          <input id="bienSurface" type="number" min="0" step="0.1">
+        </div>
+        <div class="field">
+          <label for="bienInfos">Infos supplémentaires</label>
+          <input id="bienInfos" type="text" placeholder="Ex: cellier, place parking, cave...">
+        </div>
+        <div class="field">
+          <label for="bienChambres">Chambres</label>
+          <input id="bienChambres" type="number" min="0">
+        </div>
+        <div class="field">
+          <label for="bienLoyer">Loyer (mensuel)</label>
+          <input id="bienLoyer" type="number" min="0" step="0.01">
+        </div>
+        <div style="flex-basis:100%;display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+          <button type="button" class="btn secondary" onclick="closeBienForm()">Annuler</button>
+          <button type="submit" class="btn">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="table-container" style="margin-top:12px">
+      <table id="tblBiens">
+        <thead><tr>
+          <th>Nom</th><th>Adresse</th><th>Type</th><th>Surface (m²)</th><th>Infos</th><th>Chambres</th><th>Loyer</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+	
+  </section>
+
+<!-- end part 1 container remains open so parts 2/3 appended -->
+<script>
+
+/* ===== state + localStorage ===== */
+const DB = 'locadan_pro_v3';
+let state = {
+  proprietaires: [],
+  biens: [],
+  locataires: [],
+  baux: [],
+  paiements: [],
+  rapports: [],
+  settings: {currency:'EUR', manager:''}
+};
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(DB);
+    if(!raw) return;
+    const parsed = JSON.parse(raw);
+    state = Object.assign(state, parsed);
+  }catch(e){console.error('load',e)}
+}
+function saveState(){localStorage.setItem(DB, JSON.stringify(state))}
+
+/* helpers */
+function id(){return Math.random().toString(36).slice(2,9)}
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])}
+function formatDateFR(dateStr){
+  if(!dateStr) return '';
+  const d = new Date(dateStr);
+  if(isNaN(d)) return dateStr;
+  return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
+}
+
+/* navigation */
+function showSection(name){
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('section').forEach(s=>s.style.display='none');
+  document.getElementById(name).style.display='block';
+  document.getElementById('nav-'+name).classList.add('active');
+  updateHeaderCurrency();
+  // update dynamic selects if needed
+  updateSelects();
+}
+
+/* ===== PROPRIETAIRES ===== */
+loadState(); // load immediately so renderers can use state
+function renderProprietaires(){
+  const tbody = document.querySelector('#tblProprietaires tbody');
+  tbody.innerHTML = '';
+  state.proprietaires.forEach(p=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(p.nom)}</td>
+      <td>${escapeHtml(p.prenom)}</td>
+      <td>${escapeHtml(p.tel||'')}</td>
+      <td>${escapeHtml(p.email||'')}</td>
+      <td class="actions">
+        <button class="btn secondary small" onclick="editProprietaire('${p.id}')">✎ Editer</button>
+        <button class="btn danger small" onclick="deleteProprietaire('${p.id}')">Supprimer</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function openNewProprietaire(){
+  document.getElementById('proprioId').value = '';
+  document.getElementById('proprioNom').value = '';
+  document.getElementById('proprioPrenom').value = '';
+  document.getElementById('proprioTel').value = '';
+  document.getElementById('proprioEmail').value = '';
+  document.getElementById('proprioFormWrap').style.display = 'block';
+  document.getElementById('proprioNom').focus();
+}
+function closeProprioForm(){ document.getElementById('proprioFormWrap').style.display='none' }
+
+function saveProprietaire(){
+  const idv = document.getElementById('proprioId').value;
+  const nom = document.getElementById('proprioNom').value.trim();
+  const prenom = document.getElementById('proprioPrenom').value.trim();
+  const tel = document.getElementById('proprioTel').value.trim();
+  const email = document.getElementById('proprioEmail').value.trim();
+  if(!nom || !prenom){ alert('Nom et prénom requis'); return }
+  if(idv){
+    const p = state.proprietaires.find(x=>x.id===idv);
+    if(p) Object.assign(p,{nom,prenom,tel,email});
+  } else {
+    state.proprietaires.push({id:id(),nom,prenom,tel,email});
+  }
+  saveState(); renderProprietaires(); closeProprioForm(); updateSelects();
+}
+
+function editProprietaire(idv){
+  const p = state.proprietaires.find(x=>x.id===idv);
+  if(!p) return alert('Introuvable');
+  document.getElementById('proprioId').value = p.id;
+  document.getElementById('proprioNom').value = p.nom;
+  document.getElementById('proprioPrenom').value = p.prenom;
+  document.getElementById('proprioTel').value = p.tel||'';
+  document.getElementById('proprioEmail').value = p.email||'';
+  document.getElementById('proprioFormWrap').style.display = 'block';
+}
+function deleteProprietaire(idv){
+  if(!confirm('Supprimer ce propriétaire ?')) return;
+  state.proprietaires = state.proprietaires.filter(x=>x.id!==idv);
+  // optional: unlink owner from biens
+  state.biens = state.biens.map(b=> b.ownerId===idv ? Object.assign({},b,{ownerId:null}) : b );
+  saveState(); renderProprietaires(); renderBiens(); updateSelects();
+}
+
+/* ===== BIENS (render/save/edit/delete) ===== */
+function renderBiens(){
+  const tbody = document.querySelector('#tblBiens tbody');
+  tbody.innerHTML = '';
+  state.biens.forEach(b=>{
+    const owner = state.proprietaires.find(p=>p.id===b.ownerId);
+    const ownerLabel = owner ? `${owner.nom} ${owner.prenom}` : '-';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(b.nom)}</td>
+      <td>${escapeHtml(b.adresse)}</td>
+      <td>${escapeHtml(b.type)}</td>
+      <td>${b.surface!=null?escapeHtml(b.surface+'') : ''}</td>
+      <td>${escapeHtml(b.infos||'')}</td>
+      <td>${b.chambres!=null?escapeHtml(b.chambres+'') : ''}</td>
+      <td>${b.loyer!=null?escapeHtml(Number(b.loyer).toLocaleString('fr-FR',{minimumFractionDigits:2})):''}</td>
+      <td class="actions">
+        <button class="btn secondary small" onclick="editBien('${b.id}')">✎ Editer</button>
+        <button class="btn danger small" onclick="deleteBien('${b.id}')">Supprimer</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function openNewBien(){
+  document.getElementById('bienId').value = '';
+  document.getElementById('bienNom').value = '';
+  document.getElementById('bienAdresse').value = '';
+  document.getElementById('bienType').value = 'Appartement';
+  document.getElementById('bienSurface').value = '';
+  document.getElementById('bienInfos').value = '';
+  document.getElementById('bienChambres').value = '';
+  document.getElementById('bienLoyer').value = '';
+  document.getElementById('bienFormWrap').style.display = 'block';
+  populateOwnerSelect();
+}
+function closeBienForm(){ document.getElementById('bienFormWrap').style.display='none' }
+
+function saveBien(){
+  const idv = document.getElementById('bienId').value;
+  const nom = document.getElementById('bienNom').value.trim();
+  const adresse = document.getElementById('bienAdresse').value.trim();
+  const type = document.getElementById('bienType').value;
+  const surface = document.getElementById('bienSurface').value;
+  const infos = document.getElementById('bienInfos').value.trim();
+  const chambres = document.getElementById('bienChambres').value;
+  const loyer = document.getElementById('bienLoyer').value;
+  const ownerId = document.getElementById('proprietaireBienSelect') ? document.getElementById('proprietaireBienSelect').value : null;
+  if(!nom || !adresse){ alert('Nom et adresse requis'); return }
+  if(idv){
+    const b = state.biens.find(x=>x.id===idv);
+    if(b) Object.assign(b,{nom,adresse,type,surface,infos,chambres:chambres?Number(chambres):0,loyer:loyer?Number(loyer):0, ownerId: ownerId || null});
+  } else {
+    state.biens.push({id:id(),nom,adresse,type,surface,infos,chambres:chambres?Number(chambres):0,loyer:loyer?Number(loyer):0, ownerId: ownerId || null});
+  }
+  saveState(); renderBiens(); closeBienForm(); updateSelects();
+}
+
+function editBien(idv){
+  const b = state.biens.find(x=>x.id===idv);
+  if(!b) return alert('Introuvable');
+  document.getElementById('bienId').value = b.id;
+  document.getElementById('bienNom').value = b.nom;
+  document.getElementById('bienAdresse').value = b.adresse;
+  document.getElementById('bienType').value = b.type;
+  document.getElementById('bienSurface').value = b.surface||'';
+  document.getElementById('bienInfos').value = b.infos||'';
+  document.getElementById('bienChambres').value = b.chambres!=null?b.chambres:'';
+  document.getElementById('bienLoyer').value = b.loyer!=null?b.loyer:'';
+  document.getElementById('bienFormWrap').style.display = 'block';
+  populateOwnerSelect(b.ownerId);
+}
+
+function deleteBien(idv){
+  if(!confirm('Supprimer ce bien ?')) return;
+  state.biens = state.biens.filter(x=>x.id!==idv);
+  saveState(); renderBiens(); updateSelects();
+}
+
+/* populate owner select used in bien form */
+function populateOwnerSelect(selectedId){
+  let wrap = document.getElementById('proprietaireBienSelectWrap');
+  if(!wrap){
+    const sel = document.createElement('select');
+    sel.id = 'proprietaireBienSelect';
+    wrap = document.createElement('div');
+    wrap.id = 'proprietaireBienSelectWrap';
+    wrap.style.flex = '1 1 220px';
+    wrap.innerHTML = '<label for="proprietaireBienSelect">Propriétaire</label>';
+    wrap.appendChild(sel);
+    const bienForm = document.getElementById('formBien');
+    bienForm.insertBefore(wrap, bienForm.querySelector('div[style*="justify-content:flex-end"]'));
+  }
+  const sel = document.getElementById('proprietaireBienSelect');
+  sel.innerHTML = '<option value="">(aucun)</option>';
+  state.proprietaires.forEach(p=>{
+    const opt = document.createElement('option');
+    opt.value = p.id; opt.textContent = `${p.nom} ${p.prenom}`; sel.appendChild(opt);
+  });
+  if(selectedId) sel.value = selectedId;
+}
+
+/* update selects across app (locataires, biens for bail, payments) */
+function updateSelects(){
+  // owner list for biens
+  if(document.getElementById('proprietaireBienSelect')) populateOwnerSelect(document.getElementById('proprietaireBienSelect').value);
+  // bail selects will be filled in part2 when those DOM exist
+  // payments selects too
+}
+
+/* initial render */
+renderProprietaires();
+renderBiens();
+updateHeaderCurrency();
+
+</script>
+
+  <!-- LOCATAIRES -->
+  
+  <section id="locataires" class="card" style="display:none;margin-top:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2>Locataires</h2>
+      <button class="btn" onclick="openNewLocataire()">+ Nouveau locataire</button>
+    </div>
+
+    <div id="locFormWrap" style="display:none;margin-top:12px" class="card">
+      <form id="formLocataire" class="row" onsubmit="event.preventDefault(); saveLocataire()">
+        <input type="hidden" id="locId">
+        <div class="field"><label>Nom</label><input id="locNom" type="text" required></div>
+        <div class="field"><label>Prénom</label><input id="locPrenom" type="text" required></div>
+        <div class="field"><label>Téléphone</label><input id="locTel" type="text"></div>
+        <div class="field"><label>Email</label><input id="locEmail" type="email"></div>
+        <div class="field" style="flex:1 1 100%"><label>Notes</label><textarea id="locNotes" rows="2"></textarea></div>
+        <div style="flex-basis:100%;display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+          <button type="button" class="btn secondary" onclick="closeLocForm()">Annuler</button>
+          <button type="submit" class="btn">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+
+    <table id="tblLocataires">
+      <thead><tr><th>Nom</th><th>Prénom</th><th>Téléphone</th><th>Email</th><th>Notes</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+ 
+ <!-- BAUX -->
+ 
+<section id="baux" class="card" style="display:none;margin-top:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h2>Baux</h2>
+    <button class="btn" onclick="openNewBail()">+ Nouveau bail</button>
+  </div>
+
+  <div id="bailFormWrap" style="display:none;margin-top:12px" class="card">
+    <form id="formBail" class="row" onsubmit="event.preventDefault(); saveBail()">
+      <input type="hidden" id="bailId">
+      <div class="field"><label>Bien</label><select id="bailBien"></select></div>
+      <div class="field"><label>Locataire</label><select id="bailLocataire"></select></div>
+      <div class="field"><label>Début</label><input id="bailDebut" type="date" required></div>
+
+      <!-- Colonnes légèrement décalées -->
+      <div class="field" style="margin-left:20px;"><label>Fin</label><input id="bailFin" type="date"></div>
+      <div class="field" style="margin-left:20px;"><label>Loyer (mensuel)</label><input id="bailLoyer" type="number" min="0" step="0.01"></div>
+
+      <div style="flex-basis:100%;display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+        <button type="button" class="btn secondary" onclick="closeBailForm()">Annuler</button>
+        <button type="submit" class="btn">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+
+  <table id="tblBaux">
+    <thead>
+      <tr>
+        <th>Bien</th>
+        <th>Locataire</th>
+        <th>Début</th>
+        <th>Fin</th>
+        <th>Loyer</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  
+</section>
+
+<script>
+
+/* ===== BAUX ===== */
+if(!state.baux) state.baux = [];
+
+function openNewBail(){
+  document.getElementById('bailId').value = '';
+  document.getElementById('bailDebut').valueAsDate = new Date();
+  document.getElementById('bailFin').value = '';
+  document.getElementById('bailLoyer').value = '';
+  populateBailSelects();
+  document.getElementById('bailFormWrap').style.display = 'block';
+}
+
+function closeBailForm(){ document.getElementById('bailFormWrap').style.display='none'; }
+
+function populateBailSelects(){
+  const bienSel = document.getElementById('bailBien');
+  bienSel.innerHTML = state.biens.map(b=>`<option value="${b.id}">${escapeHtml(b.nom)}</option>`).join('');
+  const locSel = document.getElementById('bailLocataire');
+  locSel.innerHTML = state.locataires.map(l=>`<option value="${l.id}">${escapeHtml(l.nom+' '+l.prenom)}</option>`).join('');
+}
+
+function saveBail(){
+  const idv = document.getElementById('bailId').value;
+  const bienId = document.getElementById('bailBien').value;
+  const locId = document.getElementById('bailLocataire').value;
+  const debut = document.getElementById('bailDebut').value;
+  const fin = document.getElementById('bailFin').value;
+  const loyer = parseFloat(document.getElementById('bailLoyer').value||0);
+
+  if(!bienId || !locId || !debut){ alert('Bien, locataire et date début requis'); return; }
+
+  if(idv){
+    const b = state.baux.find(x=>x.id===idv);
+    if(b) Object.assign(b,{bienId,locId,debut,fin,loyer});
+  } else {
+    state.baux.push({id:id(),bienId,locId,debut,fin,loyer});
+  }
+  saveState(); renderBaux(); closeBailForm();
+}
+
+function renderBaux(){
+  const tbody = document.querySelector('#tblBaux tbody');
+  tbody.innerHTML = '';
+  state.baux.forEach(b=>{
+    const bien = state.biens.find(x=>x.id===b.bienId);
+    const loc = state.locataires.find(x=>x.id===b.locId);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(bien ? bien.nom : '')}</td>
+      <td>${escapeHtml(loc ? loc.nom + ' ' + loc.prenom : '')}</td>
+      <td>${formatDateFR(b.debut)}</td>
+      <td>${b.fin ? formatDateFR(b.fin) : ''}</td>
+      <td>${b.loyer ? Number(b.loyer).toLocaleString('fr-FR',{minimumFractionDigits:2}) : ''}</td>
+      <td class="actions">
+        <button class="btn secondary small" onclick="editBail('${b.id}')">✎ Éditer</button>
+        <button class="btn danger small" onclick="deleteBail('${b.id}')">Supprimer</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+function editBail(idv){
+  const b = state.baux.find(x=>x.id===idv);
+  if(!b) return alert('Bail introuvable');
+  document.getElementById('bailId').value = b.id;
+  populateBailSelects();
+  document.getElementById('bailBien').value = b.bienId;
+  document.getElementById('bailLocataire').value = b.locId;
+  document.getElementById('bailDebut').value = b.debut;
+  document.getElementById('bailFin').value = b.fin;
+  document.getElementById('bailLoyer').value = b.loyer;
+  document.getElementById('bailFormWrap').style.display='block';
+}
+
+function deleteBail(idv){
+  if(!confirm('Supprimer ce bail ?')) return;
+  state.baux = state.baux.filter(x=>x.id!==idv);
+  saveState(); renderBaux();
+}
+ 
+/* ===== LOCATAIRES ===== */
+if(!state.locataires) state.locataires = [];
+
+function renderLocataires(){
+  const tbody = document.querySelector('#tblLocataires tbody');
+  tbody.innerHTML = '';
+  state.locataires.forEach(l=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(l.nom)}</td>
+      <td>${escapeHtml(l.prenom)}</td>
+      <td>${escapeHtml(l.tel||'')}</td>
+      <td>${escapeHtml(l.email||'')}</td>
+      <td>${escapeHtml(l.notes||'')}</td>
+      <td class="actions">
+        <button class="btn secondary small" onclick="editLocataire('${l.id}')">✎ Editer</button>
+        <button class="btn danger small" onclick="deleteLocataire('${l.id}')">Supprimer</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function openNewLocataire(){
+  document.getElementById('locId').value = '';
+  document.getElementById('locNom').value = '';
+  document.getElementById('locPrenom').value = '';
+  document.getElementById('locTel').value = '';
+  document.getElementById('locEmail').value = '';
+  document.getElementById('locNotes').value = '';
+  document.getElementById('locFormWrap').style.display = 'block';
+}
+function closeLocForm(){ document.getElementById('locFormWrap').style.display='none' }
+
+function saveLocataire(){
+  const idv = document.getElementById('locId').value;
+  const nom = document.getElementById('locNom').value.trim();
+  const prenom = document.getElementById('locPrenom').value.trim();
+  const tel = document.getElementById('locTel').value.trim();
+  const email = document.getElementById('locEmail').value.trim();
+  const notes = document.getElementById('locNotes').value.trim();
+  if(!nom || !prenom){ alert('Nom et prénom requis'); return; }
+  if(idv){
+    const l = state.locataires.find(x=>x.id===idv);
+    if(l) Object.assign(l,{nom,prenom,tel,email,notes});
+  } else {
+    state.locataires.push({id:id(),nom,prenom,tel,email,notes});
+  }
+  saveState(); renderLocataires(); closeLocForm(); updateSelects();
+}
+
+function editLocataire(idv){
+  const l = state.locataires.find(x=>x.id===idv);
+  if(!l) return;
+  document.getElementById('locId').value = l.id;
+  document.getElementById('locNom').value = l.nom;
+  document.getElementById('locPrenom').value = l.prenom;
+  document.getElementById('locTel').value = l.tel||'';
+  document.getElementById('locEmail').value = l.email||'';
+  document.getElementById('locNotes').value = l.notes||'';
+  document.getElementById('locFormWrap').style.display = 'block';
+}
+function deleteLocataire(idv){
+  if(!confirm('Supprimer ce locataire ?')) return;
+  state.locataires = state.locataires.filter(x=>x.id!==idv);
+  // remove from baux/payments? optional
+  saveState(); renderLocataires(); renderBaux(); updateSelects();
+}
+
+/* ===== BAUX ===== */
+if(!state.baux) state.baux = [];
+
+
+function openNewBail(){
+  document.getElementById('bailId').value = '';
+  // populate selects
+  document.getElementById('bailBien').innerHTML = state.biens.map(b=>`<option value="${b.id}">${escapeHtml(b.nom)}</option>`).join('');
+  document.getElementById('bailLocataire').innerHTML = state.locataires.map(l=>`<option value="${l.id}">${escapeHtml(l.nom+' '+l.prenom)}</option>`).join('');
+  document.getElementById('bailDebut').value = '';
+  document.getElementById('bailFin').value = '';
+  document.getElementById('bailLoyer').value = '';
+  document.getElementById('bailFormWrap').style.display = 'block';
+}
+function closeBailForm(){ document.getElementById('bailFormWrap').style.display='none' }
+
+function saveBail(){
+  const idv = document.getElementById('bailId').value;
+  const bienId = document.getElementById('bailBien').value;
+  const locId = document.getElementById('bailLocataire').value;
+  const debut = document.getElementById('bailDebut').value;
+  const fin = document.getElementById('bailFin').value;
+  const loyer = document.getElementById('bailLoyer').value;
+  if(!bienId || !locId || !debut){ alert('Bien, locataire et date de début requis'); return; }
+  if(idv){
+    const b = state.baux.find(x=>x.id===idv);
+    if(b) Object.assign(b,{bienId,locId,debut,fin,loyer});
+  } else {
+    state.baux.push({id:id(),bienId,locId,debut,fin,loyer});
+  }
+  saveState(); renderBaux(); closeBailForm();
+}
+
+function editBail(idv){
+  const b = state.baux.find(x=>x.id===idv);
+  if(!b) return;
+  document.getElementById('bailId').value = b.id;
+  document.getElementById('bailBien').innerHTML = state.biens.map(x=>`<option value="${x.id}">${escapeHtml(x.nom)}</option>`).join('');
+  document.getElementById('bailLocataire').innerHTML = state.locataires.map(x=>`<option value="${x.id}">${escapeHtml(x.nom+' '+x.prenom)}</option>`).join('');
+  document.getElementById('bailBien').value = b.bienId;
+  document.getElementById('bailLocataire').value = b.locId;
+  document.getElementById('bailDebut').value = b.debut;
+  document.getElementById('bailFin').value = b.fin||'';
+  document.getElementById('bailLoyer').value = b.loyer||'';
+  document.getElementById('bailFormWrap').style.display = 'block';
+}
+function deleteBail(idv){
+  if(!confirm('Supprimer ce bail ?')) return;
+  state.baux = state.baux.filter(x=>x.id!==idv);
+  saveState(); renderBaux();
+}
+
+/* ===== fichiers d'état des lieux ===== */
+
+/* initial renderers for this part */
+renderLocataires();
+renderBaux();
+</script>
+
+ <!-- PAIEMENTS -->
+ 
+<section id="paiements" class="card" style="display:none;margin-top:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h2>Paiements</h2>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn" onclick="openNewPaiement()">+ Nouveau paiement</button>
+      <button class="btn secondary" onclick="printPayments()">🖨️ Imprimer</button>
+      <button class="btn secondary" onclick="exportPDFPayments()">Exporter en PDF</button>
+      <button class="btn secondary" onclick="previewPDFPayments()">Afficher le PDF</button>
+    </div>
+  </div>
+
+  <div id="paiementFormWrap" style="display:none;margin-top:12px" class="card">
+    <form id="formPaiement" class="row" onsubmit="event.preventDefault(); savePaiement()">
+      <input type="hidden" id="paiementId">
+      <div class="field"><label>Locataire</label><select id="paiementLocataireSelect"></select></div>
+      <div class="field"><label>Date</label><input id="paiementDate" type="date" required></div>
+      <div class="field"><label>Montant</label><input id="paiementMontant" type="number" step="0.01" min="0" required></div>
+      <div class="field"><label>Méthode</label>
+        <select id="paiementMethode"><option>Virement</option><option>Chèque</option><option>Espèces</option></select>
+      </div>
+      <div class="field" style="flex:1 1 100%"><label>Notes</label><input id="paiementNote" type="text"></div>
+      <div style="flex-basis:100%;display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+        <button type="button" class="btn secondary" onclick="closePaiementForm()">Annuler</button>
+        <button type="submit" class="btn">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="table-container" style="margin-top:12px">
+    <table id="tblPaiements">
+      <thead>
+        <tr><th>Date</th><th>Locataire</th><th>Montant</th><th>Méthode</th><th>Notes</th><th></th></tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot><tr><td colspan="6" class="muted" id="paiementsTotalRow"></td></tr></tfoot>
+    </table>
+  </div>
+
+  <div id="pdfPreviewContainer" style="margin-top:16px;display:none;position:fixed;top:10%;left:10%;width:80%;height:80%;background:white;box-shadow:0 0 12px rgba(0,0,0,0.4);z-index:1000">
+    <button onclick="closePdfPreview()" style="position:absolute;top:4px;right:4px;z-index:1010" class="btn small danger">✖</button>
+    <iframe id="pdfPreviewIframe" style="width:100%;height:100%;border:none"></iframe>
+  </div>
+</section>
+
+<script>
+/* ===== helper function ===== */
+function formatAmountFR(amount){
+  return Number(amount).toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2}).replace(/\s/g,'');
+}
+
+/* ===== PAYMENTS ===== */
+function populatePaiementLocataireSelect(){
+  const sel = document.getElementById('paiementLocataireSelect');
+  sel.innerHTML = '<option value="">(sélectionner)</option>';
+  (state.locataires||[]).forEach(l=>{
+    const opt = document.createElement('option');
+    opt.value = l.id; opt.textContent = l.nom + ' ' + l.prenom;
+    sel.appendChild(opt);
+  });
+}
+
+function openNewPaiement(){
+  document.getElementById('paiementId').value = '';
+  document.getElementById('paiementDate').valueAsDate = new Date();
+  document.getElementById('paiementMontant').value = '';
+  document.getElementById('paiementMethode').value = 'Virement';
+  document.getElementById('paiementNote').value = '';
+  populatePaiementLocataireSelect();
+  document.getElementById('paiementFormWrap').style.display = 'block';
+}
+function closePaiementForm(){ document.getElementById('paiementFormWrap').style.display = 'none' }
+
+function savePaiement(){
+  const idv = document.getElementById('paiementId').value;
+  const locId = document.getElementById('paiementLocataireSelect').value;
+  const date = document.getElementById('paiementDate').value;
+  const montant = parseFloat(document.getElementById('paiementMontant').value||0);
+  const methode = document.getElementById('paiementMethode').value;
+  const note = document.getElementById('paiementNote').value.trim();
+  if(!locId || !date || !montant){ alert('Locataire, date et montant requis'); return; }
+  if(idv){
+    const p = state.paiements.find(x=>x.id===idv);
+    if(p) Object.assign(p,{locId,date,montant,methode,note});
+  } else {
+    state.paiements.push({id:id(),locId,date,montant,methode,note});
+  }
+  saveState(); renderPaiements(); closePaiementForm();
+}
+
+function renderPaiements(){
+  const tbody = document.querySelector('#tblPaiements tbody');
+  tbody.innerHTML = '';
+  const arr = (state.paiements||[]).slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
+  let total = 0;
+  arr.forEach(p=>{
+    const loc = state.locataires.find(l=>l.id===p.locId);
+    const locLabel = loc ? (loc.nom + ' ' + loc.prenom) : '-';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${formatDateFR(p.date)}</td>
+      <td>${escapeHtml(locLabel)}</td>
+      <td>${formatAmountFR(p.montant)}</td>
+      <td>${escapeHtml(p.methode||'')}</td>
+      <td>${escapeHtml(p.note||'')}</td>
+      <td class="actions">
+        <button class="btn secondary small" onclick="editPaiement('${p.id}')">✎ Editer</button>
+        <button class="btn danger small" onclick="deletePaiement('${p.id}')">Supprimer</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+    total += Number(p.montant||0);
+  });
+  document.getElementById('paiementsTotalRow').textContent =
+  `Total des paiements : ${formatMontantFR(total)} ${state.settings.currency || ''}`; 
+}
+
+function editPaiement(idv){
+  const p = state.paiements.find(x=>x.id===idv);
+  if(!p) return alert('Paiement introuvable');
+  document.getElementById('paiementId').value = p.id;
+  populatePaiementLocataireSelect();
+  document.getElementById('paiementLocataireSelect').value = p.locId;
+  document.getElementById('paiementDate').value = p.date;
+  document.getElementById('paiementMontant').value = p.montant;
+  document.getElementById('paiementMethode').value = p.methode;
+  document.getElementById('paiementNote').value = p.note||'';
+  document.getElementById('paiementFormWrap').style.display = 'block';
+}
+
+function deletePaiement(idv){
+  if(!confirm('Supprimer ce paiement ?')) return;
+  state.paiements = state.paiements.filter(x=>x.id!==idv);
+  saveState(); renderPaiements();
+}
+
+/* ===== Print & PDF ===== */
+function printPayments(){
+  const arr = (state.paiements||[]).slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
+  let html = `<!doctype html><html><head><meta charset="utf-8"><title>Liste des paiements</title>
+  <style>body{font-family:Arial;margin:40px} table{width:100%;border-collapse:collapse;margin-top:20px} th,td{border:1px solid #ddd;padding:8px;text-align:left} tfoot td{font-weight:bold}</style>
+  </head><body>`;
+  html += `<h1>Liste des paiements</h1>`;
+  html += `<table><thead><tr><th>Date</th><th>Locataire</th><th>Montant</th><th>Méthode</th><th>Note</th></tr></thead><tbody>`;
+  let total=0;
+  arr.forEach(p=>{
+    const loc = state.locataires.find(l=>l.id===p.locId);
+    const label = loc ? `${loc.nom} ${loc.prenom}` : '-';
+    html += `<tr><td>${formatDateFR(p.date)}</td><td>${escapeHtml(label)}</td><td>${formatAmountFR(p.montant)}</td><td>${escapeHtml(p.methode)}</td><td>${escapeHtml(p.note||'')}</td></tr>`;
+    total += Number(p.montant||0);
+  });
+  html += `</tbody><tfoot><tr><td colspan="2" style="text-align:right">Total</td><td>${formatAmountFR(total)} ${state.settings.currency||''}</td><td colspan="2"></td></tr></tfoot></table></body></html>`;
+  const w = window.open('', '_blank');
+  w.document.write(html); w.document.close(); w.focus();
+  setTimeout(()=>w.print(),300);
+}
+
+function exportPDFPayments() {
+  const doc = new jsPDF();
+  doc.setFontSize(16);
+  doc.text("Liste des paiements", 14, 30);
+  doc.setFontSize(12);
+
+  const cols = ["Date", "Locataire", "Montant", "Méthode", "Notes"];
+  const startY = 40;
+  let y = startY + 10;
+
+  const colWidths = [30, 60, 25, 30, 40];
+  const colPositions = [14, 44, 104, 129, 159];
+
+  doc.setFont("helvetica", "bold");
+  cols.forEach((col, i) => doc.text(col, colPositions[i], startY));
+  doc.setFont("helvetica", "normal");
+
+  let total = 0;
+  state.paiements.forEach(p => {
+    doc.text(new Date(p.date).toLocaleDateString('fr-FR'), colPositions[0], y);
+    doc.text(p.locataire, colPositions[1], y);
+    doc.text(formatMontantFR(p.montant), colPositions[2], y);
+    doc.text(p.methode, colPositions[3], y);
+    doc.text(p.note || '', colPositions[4], y);
+    total += Number(p.montant);
+    y += 8;
+  });
+
+  y += 10;
+  doc.setFont("helvetica", "bold");
+  doc.text(`Total : ${formatMontantFR(total)} ${state.settings.currency || ''}`, 14, y);
+
+  doc.save("paiements.pdf");
+}
+function previewPDFPayments(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+  doc.setFontSize(16);
+  const titleY = 25;
+  doc.text('Liste des paiements', 12, titleY);
+  doc.setFontSize(11);
+  const headerY = titleY + 10;
+  const cols = [
+    {label:'Date', x:12, w:30},
+    {label:'Locataire', x:45, w:80},
+    {label:'Montant', x:130, w:30},
+    {label:'Méthode', x:165, w:35},
+    {label:'Note', x:200, w:80}
+  ];
+  cols.forEach(c=>doc.text(c.label, c.x, headerY));
+
+  let y = headerY + 7;
+  const arr = (state.paiements||[]).slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
+  const lineHeight = 6;
+  let total = 0;
+
+  for(const p of arr){
+    if(y > 180){ doc.addPage(); y = 20; cols.forEach(c=>doc.text(c.label,c.x,y)); y += 8; }
+    const loc = state.locataires.find(l=>l.id===p.locId);
+    const locLabel = loc ? (loc.nom + ' ' + loc.prenom) : '-';
+    doc.text(formatDateFR(p.date), cols[0].x, y);
+    doc.text(locLabel, cols[1].x, y);
+    doc.text(Number(p.montant).toLocaleString('fr-FR',{minimumFractionDigits:2}), cols[2].x, y);
+    doc.text(p.methode||'', cols[3].x, y);
+    doc.text(p.note||'', cols[4].x, y);
+    y += lineHeight;
+    total += Number(p.montant||0);
+  }
+
+  // Affiche le total en bas
+  if(y > 180){ doc.addPage(); y = 20; }
+  doc.setFontSize(12);
+  doc.text(`Total : ${total.toFixed(2).replace('.', ',')} ${state.settings.currency||''}`, 12, y+8);
+
+  // Affichage dans l'iframe flottante
+  const url = doc.output('bloburl');
+  const c = document.getElementById('pdfPreviewContainer');
+  c.style.display = 'block';
+  c.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:1px solid #ddd"></iframe>`;
+}
+function closePdfPreview(){
+  document.getElementById('pdfPreviewContainer').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // mettre à jour le bandeau avec la devise sauvegardée
+  updateHeaderCurrencySymbol();
+
+  // initialiser le select paramètres
+  const sel = document.getElementById('selectDevise');
+  if (sel && state.settings.currency) sel.value = state.settings.currency;
+});
+
+</script>
+</script>
+</section>
+
+  <!-- RAPPORTS -->
+  
+  <section id="rapports" class="card" style="display:none;margin-top:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2>Rapports</h2>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="rapportInput" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt" multiple style="display:none" onchange="handleRapportFiles(this.files)">
+        <button class="btn" onclick="document.getElementById('rapportInput').click()">Importer fichiers</button>
+        <button class="btn secondary" onclick="newEmptyReport()">+ Nouveau rapport</button>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <div id="rapportsList" class="card" style="padding:8px"></div>
+      <div id="rapportApercu" style="margin-top:12px;border:1px solid #eee;min-height:220px;padding:6px;display:none"></div>
+      <progress id="rapportProgress" value="0" max="100" style="width:100%;display:none;margin-top:8px"></progress>
+    </div>
+  </section>
+
+  <!-- PARAMETRES -->
+  
+  <section id="parametres" class="card" style="display:none;margin-top:12px">
+    <h2>Paramètres</h2>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div>
+        <label>Nom du gestionnaire</label>
+        <input id="paramManager" type="text" placeholder="Nom du gestionnaire">
+      </div>
+      <div>
+        <label>Devise</label>
+        <select id="selectDevise">
+        <option value="€">Euro (€)</option>
+        <option value="$">Dollar ($)</option>
+        <option value="£">Livre (£)</option>
+        <option value="XPF">Franc Pacifique (XPF)</option>
+</select>
+ 
+ </div>
+      <div style="align-self:flex-end">
+        <button class="btn" onclick="saveSettings()">Valider</button>
+      </div>
+    </div>
+  </section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* ===== ensure arrays present ===== */
+if(!state.paiements) state.paiements = [];
+if(!state.rapports) state.rapports = [];
+if(!state.locataires) state.locataires = [];
+if(!state.biens) state.biens = [];
+
+/* ===== PAYMENTS ===== */
+function populatePaiementLocataireSelect(){
+  const sel = document.getElementById('paiementLocataireSelect');
+  sel.innerHTML = '<option value="">(sélectionner)</option>';
+  (state.locataires||[]).forEach(l=>{
+    const opt = document.createElement('option');
+    opt.value = l.id; opt.textContent = l.nom + ' ' + l.prenom;
+    sel.appendChild(opt);
+  });
+}
+
+function openNewPaiement(){
+  document.getElementById('paiementId').value = '';
+  document.getElementById('paiementDate').valueAsDate = new Date();
+  document.getElementById('paiementMontant').value = '';
+  document.getElementById('paiementMethode').value = 'Virement';
+  document.getElementById('paiementNote').value = '';
+  populatePaiementLocataireSelect();
+  document.getElementById('paiementFormWrap').style.display = 'block';
+}
+function closePaiementForm(){ document.getElementById('paiementFormWrap').style.display = 'none' }
+
+function savePaiement(){
+  const idv = document.getElementById('paiementId').value;
+  const locId = document.getElementById('paiementLocataireSelect').value;
+  const date = document.getElementById('paiementDate').value;
+  const montant = parseFloat(document.getElementById('paiementMontant').value||0);
+  const methode = document.getElementById('paiementMethode').value;
+  const note = document.getElementById('paiementNote').value.trim();
+  if(!locId || !date || !montant){ alert('Locataire, date et montant requis'); return; }
+  if(idv){
+    const p = state.paiements.find(x=>x.id===idv);
+    if(p) Object.assign(p,{locId,date,montant,methode,note});
+  } else {
+    state.paiements.push({id:id(),locId,date,montant,methode,note});
+  }
+  saveState(); renderPaiements(); closePaiementForm();
+}
+
+function renderPaiements(){
+  const tbody = document.querySelector('#tblPaiements tbody');
+  tbody.innerHTML = '';
+  const arr = (state.paiements||[]).slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
+  let total = 0;
+  arr.forEach(p=>{
+    const loc = state.locataires.find(l=>l.id===p.locId);
+    const locLabel = loc ? (loc.nom + ' ' + loc.prenom) : '-';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${formatDateFR(p.date)}</td>
+      <td>${escapeHtml(locLabel)}</td>
+      <td>${Number(p.montant).toLocaleString('fr-FR',{minimumFractionDigits:2})}</td>
+      <td>${escapeHtml(p.methode||'')}</td>
+      <td>${escapeHtml(p.note||'')}</td>
+      <td class="actions">
+        <button class="btn secondary small" onclick="editPaiement('${p.id}')">✎ Editer</button>
+        <button class="btn danger small" onclick="deletePaiement('${p.id}')">Supprimer</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+    total += Number(p.montant||0);
+  });
+  document.getElementById('paiementsTotalRow').textContent = `Total des paiements : ${total.toLocaleString('fr-FR',{minimumFractionDigits:2})} ${state.settings.currency||''}`;
+}
+
+function editPaiement(idv){
+  const p = state.paiements.find(x=>x.id===idv);
+  if(!p) return alert('Paiement introuvable');
+  document.getElementById('paiementId').value = p.id;
+  populatePaiementLocataireSelect();
+  document.getElementById('paiementLocataireSelect').value = p.locId;
+  document.getElementById('paiementDate').value = p.date;
+  document.getElementById('paiementMontant').value = p.montant;
+  document.getElementById('paiementMethode').value = p.methode;
+  document.getElementById('paiementNote').value = p.note||'';
+  document.getElementById('paiementFormWrap').style.display = 'block';
+}
+
+function deletePaiement(idv){
+  if(!confirm('Supprimer ce paiement ?')) return;
+  state.paiements = state.paiements.filter(x=>x.id!==idv);
+  saveState(); renderPaiements();
+}
+
+/* ===== Print & PDF (payments) ===== */
+
+function printPayments(){
+  const arr = (state.paiements||[]).slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
+  let html = `<!doctype html><html><head><meta charset="utf-8"><title>Liste des paiements</title>
+  <style>body{font-family:Arial;margin:40px} h1{margin-top:70px} table{width:100%;border-collapse:collapse;margin-top:20px} th,td{border:1px solid #ddd;padding:8px;text-align:left} tfoot td{font-weight:bold}</style>
+  </head><body>`;
+  html += `<h1 style="margin-top:70px">Liste des paiements</h1>`;
+  html += `<table><thead><tr><th>Date</th><th>Locataire</th><th>Montant</th><th>Méthode</th><th>Note</th></tr></thead><tbody>`;
+  let total=0;
+  arr.forEach(p=>{
+    const loc = state.locataires.find(l=>l.id===p.locId);
+    const label = loc ? `${loc.nom} ${loc.prenom}` : '-';
+    html += `<tr><td>${formatDateFR(p.date)}</td><td>${escapeHtml(label)}</td><td>${Number(p.montant).toLocaleString('fr-FR',{minimumFractionDigits:2})}</td><td>${escapeHtml(p.methode)}</td><td>${escapeHtml(p.note||'')}</td></tr>`;
+    total += Number(p.montant||0);
+  });
+  html += `</tbody><tfoot><tr><td colspan="2" style="text-align:right">Total</td><td>${total.toLocaleString('fr-FR',{minimumFractionDigits:2})} ${state.settings.currency||''}</td><td colspan="2"></td></tr></tfoot></table></body></html>`;
+  const w = window.open('', '_blank');
+  w.document.write(html); w.document.close(); w.focus();
+  setTimeout(()=>w.print(),300);
+}
+
+async function exportPDFPayments(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+  doc.setFontSize(16);
+  const titleY = 25;
+  doc.text('Liste des paiements', 12, titleY);
+  doc.setFontSize(11);
+  const headerY = titleY + 10;
+  const cols = [
+    {label:'Date', x:12, w:30},
+    {label:'Locataire', x:45, w:80},
+    {label:'Montant', x:130, w:30},
+    {label:'Méthode', x:165, w:35},
+    {label:'Note', x:200, w:80}
+  ];
+  cols.forEach(c=>doc.text(c.label, c.x, headerY));
+  let y = headerY + 7;
+  const arr = (state.paiements||[]).slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
+  let total = 0;
+  const lineHeight = 6;
+  for(const p of arr){
+    if(y > 180){ doc.addPage(); y = 20; cols.forEach(c=>doc.text(c.label,c.x,y)); y += 8; }
+    const loc = state.locataires.find(l=>l.id===p.locId);
+    const locLabel = loc ? (loc.nom + ' ' + loc.prenom) : '-';
+    doc.text(formatDateFR(p.date), cols[0].x, y);
+    doc.text(locLabel, cols[1].x, y);
+	doc.text(formatMontantFR(p.montant), cols[2].x, y);    
+    doc.text(p.methode||'', cols[3].x, y);
+    // handle note wrapping roughly
+    const note = p.note||'';
+    const noteChunks = splitText(note, 60);
+    doc.text(noteChunks[0]||'', cols[4].x, y);
+    for(let k=1;k<noteChunks.length;k++){ y += lineHeight; if(y>180){ doc.addPage(); y=20; cols.forEach(c=>doc.text(c.label,c.x,y)); y+=8;} doc.text(noteChunks[k], cols[4].x, y); }
+    y += lineHeight;
+    total += Number(p.montant||0);
+  }
+  if(y > 180){ doc.addPage(); y = 20; }
+  doc.setFontSize(12);
+  doc.text(`Total : ${total.toLocaleString('fr-FR',{minimumFractionDigits:2})} ${state.settings.currency||''}`, 12, y+8);
+  doc.save(`paiements_${(new Date()).toISOString().slice(0,10)}.pdf`);
+}
+
+function previewPDFPayments(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+  doc.setFontSize(16);
+  const titleY = 25;
+  doc.text('Liste des paiements', 12, titleY);
+  doc.setFontSize(11);
+  const headerY = titleY + 10;
+  const cols = [
+    {label:'Date', x:12, w:30},
+    {label:'Locataire', x:45, w:80},
+    {label:'Montant', x:130, w:30},
+    {label:'Méthode', x:165, w:35},
+    {label:'Note', x:200, w:80}
+  ];
+  cols.forEach(c=>doc.text(c.label, c.x, headerY));
+  let y = headerY + 7;
+  const arr = (state.paiements||[]).slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
+  const lineHeight = 6;
+  for(const p of arr){
+    if(y > 180){ doc.addPage(); y = 20; cols.forEach(c=>doc.text(c.label,c.x,y)); y += 8; }
+    const loc = state.locataires.find(l=>l.id===p.locId);
+    const locLabel = loc ? (loc.nom + ' ' + loc.prenom) : '-';
+    doc.text(formatDateFR(p.date), cols[0].x, y);
+    doc.text(locLabel, cols[1].x, y);
+	doc.text(formatMontantFR(p.montant), cols[2].x, y);    
+    doc.text(p.methode||'', cols[3].x, y);
+    doc.text(p.note||'', cols[4].x, y);
+    y += lineHeight;
+  }
+  const url = doc.output('bloburl');
+  const c = document.getElementById('pdfPreviewContainer');
+  c.style.display = 'block';
+  c.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:1px solid #ddd"></iframe>`;
+}
+
+/* helper */
+function splitText(text, chunk){
+  if(!text) return [''];
+  const res=[];
+  for(let i=0;i<text.length;i+=chunk) res.push(text.substr(i,chunk));
+  return res;
+}
+
+/* ===== RAPPORTS ===== */
+function handleRapportFiles(files){
+  if(!files || files.length===0) return;
+  const arr = Array.from(files);
+  const progress = document.getElementById('rapportProgress');
+  progress.style.display = 'block';
+  let loaded = 0;
+  arr.forEach(f=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const item = { id:id(), name:f.name, type:f.type, data:e.target.result, created: new Date().toISOString() };
+      state.rapports.unshift(item); // newest first
+      saveState();
+      loaded++;
+      progress.value = (loaded/arr.length)*100;
+      renderRapports();
+      if(loaded===arr.length) setTimeout(()=>progress.style.display='none',300);
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+function renderRapports(){
+  const div = document.getElementById('rapportsList');
+  div.innerHTML = '';
+  if(!state.rapports || state.rapports.length===0){ div.innerHTML = '<div class="muted">Aucun rapport</div>'; return; }
+  state.rapports.forEach(r=>{
+    const row = document.createElement('div');
+    row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.padding='6px 4px';
+    row.innerHTML = `<div style="flex:1">${escapeHtml(r.name)} <span class="muted">(${formatDateFR(r.created)})</span></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn secondary small" onclick="viewRapport('${r.id}')">Voir</button>
+        <button class="btn small" onclick="replaceRapport('${r.id}')">Éditer</button>
+        <button class="btn danger small" onclick="deleteRapport('${r.id}')">Supprimer</button>
+      </div>`;
+    div.appendChild(row);
+  });
+}
+
+function viewRapport(idr){
+  const r = state.rapports.find(x=>x.id===idr);
+  if(!r) return alert('Fichier introuvable');
+
+  let floatWin = document.getElementById('rapportFloatingWindow');
+  if(!floatWin){
+    floatWin = document.createElement('div');
+    floatWin.id = 'rapportFloatingWindow';
+    floatWin.style.position = 'fixed';
+    floatWin.style.top = '50px';
+    floatWin.style.left = '50px';
+    floatWin.style.width = '80%';
+    floatWin.style.height = '80%';
+    floatWin.style.background = 'white';
+    floatWin.style.border = '1px solid #ccc';
+    floatWin.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+    floatWin.style.zIndex = '9999';
+    floatWin.style.padding = '0'; // plus besoin de padding
+    floatWin.style.overflow = 'hidden'; // empêche les scroll internes
+    floatWin.style.resize = 'both';
+    floatWin.style.display = 'flex';
+    floatWin.style.flexDirection = 'column';
+
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = '✖ Fermer';
+    closeBtn.className = 'btn secondary small';
+    closeBtn.style.alignSelf = 'flex-end';
+    closeBtn.style.margin = '4px';
+    closeBtn.onclick = ()=> floatWin.style.display='none';
+    floatWin.appendChild(closeBtn);
+
+    const contentDiv = document.createElement('div');
+    contentDiv.id = 'rapportFloatingContent';
+    contentDiv.style.flex = '1'; // occupe tout l'espace restant
+    contentDiv.style.width = '100%';
+    contentDiv.style.height = '100%';
+    floatWin.appendChild(contentDiv);
+
+    document.body.appendChild(floatWin);
+  }
+
+  floatWin.style.display = 'flex';
+  const contentDiv = document.getElementById('rapportFloatingContent');
+  contentDiv.innerHTML = '';
+
+  if(r.type === 'application/pdf' || r.name.toLowerCase().endsWith('.pdf')){
+    contentDiv.innerHTML = `<iframe src="${r.data}" style="width:100%;height:100%;border:0;"></iframe>`;
+  } else if(r.name.toLowerCase().endsWith('.txt')){
+    const txt = atob(r.data.split(',')[1]);
+    contentDiv.innerHTML = `<pre style="white-space:pre-wrap; padding:8px;">${escapeHtml(txt)}</pre>`;
+  } else {
+    try {
+      const blob = dataURLtoBlob(r.data);
+      const url = URL.createObjectURL(blob);
+      contentDiv.innerHTML = `<iframe src="${url}" style="width:100%;height:100%;border:0;"></iframe>`;
+    } catch(e){
+      contentDiv.innerHTML = 'Aperçu non disponible pour ce format.';
+    }
+  }
+}
+
+function replaceRapport(idr){
+  const inp = document.createElement('input'); inp.type='file'; inp.accept = '.pdf,.doc,.docx,.xls,.xlsx,.txt';
+  inp.onchange = ()=> {
+    const f = inp.files[0]; if(!f) return;
+    const reader = new FileReader();
+    reader.onload = (e)=> {
+      const r = state.rapports.find(x=>x.id===idr);
+      if(!r) return;
+      r.name = f.name; r.type = f.type; r.data = e.target.result; r.created = new Date().toISOString();
+      saveState(); renderRapports(); viewRapport(r.id);
+    };
+    reader.readAsDataURL(f);
+  };
+  inp.click();
+}
+
+function deleteRapport(idr){
+  if(!confirm('Supprimer ce fichier ?')) return;
+  state.rapports = state.rapports.filter(x=>x.id!==idr);
+  saveState(); renderRapports();
+}
+
+function newEmptyReport(){
+  const title = prompt('Titre du nouveau rapport :');
+  if(!title) return;
+  const r = { id:id(), name: title + '.txt', type:'text/plain', data: 'data:text/plain;base64,' + btoa('Nouveau rapport : ' + title), created: new Date().toISOString() };
+  state.rapports.unshift(r);
+  saveState(); renderRapports(); viewRapport(r.id);
+}
+
+/* helper dataURL->Blob */
+function dataURLtoBlob(dataurl) {
+  const arr = dataurl.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length; const u8arr = new Uint8Array(n);
+  while(n--){ u8arr[n] = bstr.charCodeAt(n); }
+  return new Blob([u8arr], {type:mime});
+}
+
+/* ===== PARAMS ===== */
+function saveSettings() {
+  const cur = document.getElementById('selectDevise').value; // symbole
+  state.settings.currency = cur;
+  saveState(); // sauvegarde dans localStorage
+  updateHeaderCurrencySymbol(); // met à jour le bandeau immédiatement
+  renderPaiements(); // recalculer les totaux si nécessaire
+  alert('Paramètres enregistrés');
+}
+
+function updateHeaderCurrencySymbol(){
+  const el = document.getElementById('currentCurrencySymbol');
+  if(el) el.textContent = state.settings.currency || '€';
+}
+
+/* ===== PARAMS / BANDEAU DEVISA ===== */
+function updateHeaderCurrencySymbol() {
+  const el = document.getElementById('currentCurrencySymbol');
+  if(el) el.textContent = state.settings.currency || '€';
+}
+
+function updateHeaderCurrency() {
+  const el = document.getElementById('currentCurrency');
+  if (el) el.textContent = state.settings.currency || '€';
+}
+
+// Optionnel : à l'ouverture de la page ou de paramètres
+document.addEventListener('DOMContentLoaded', () => {
+  // initialisation du bandeau
+  updateHeaderCurrency();
+
+  // initialisation du select dans paramètres
+  const sel = document.getElementById('selectDevise');
+  if(sel && state.settings.currency) sel.value = state.settings.currency;
+});
+
+/* ===== init UI for part 3 ===== */
+function initPart3(){
+  renderPaiements();
+  renderRapports();
+  updateHeaderCurrency();
+  // wire selects for payments/bail
+  populatePaiementLocataireSelect();
+  // also fill bail selects if visible
+  if(document.getElementById('bailBien')) document.getElementById('bailBien').innerHTML = state.biens.map(b=>`<option value="${b.id}">${escapeHtml(b.nom)}</option>`).join('');
+  if(document.getElementById('bailLocataire')) document.getElementById('bailLocataire').innerHTML = state.locataires.map(l=>`<option value="${l.id}">${escapeHtml(l.nom+' '+l.prenom)}</option>`).join('');
+}
+
+renderProprietaires();
+renderBiens();
+renderLocataires();
+renderBaux();
+initPart3();
+
+// save on unload
+window.addEventListener('beforeunload', ()=> saveState());
+function formatMontantFR(value) {
+  if (!value) return '0,00';
+  const parts = Number(value).toFixed(2).split('.');
+  const entier = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return entier + ',' + parts[1];
+}
+</script>
+
+</div> <!-- close container -->
+
+<script>
+function toggleTheme(){
+  const body = document.body;
+  const current = body.dataset.theme || 'light';
+  const next = current === 'light' ? 'dark' : 'light';
+  body.dataset.theme = next;
+  localStorage.setItem('theme', next);
+  document.getElementById('themeToggle').textContent = next === 'light' ? '🌙 Sombre' : '☀️ Clair';
+}
+
+// Charger le thème sauvegardé
+(function(){
+  const saved = localStorage.getItem('theme') || 'light';
+  document.body.dataset.theme = saved;
+  const btn = document.getElementById('themeToggle');
+  if(btn) btn.textContent = saved === 'light' ? '🌙 Sombre' : '☀️ Clair';
+})();
+</script>
+
+<script>
+function exportData() {
+  const dataStr = JSON.stringify(state, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "locadan_backup.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+<script>
+function importData() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json";
+  input.onchange = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedState = JSON.parse(e.target.result);
+        if (!confirm("Importer ces données remplacera les données actuelles. Continuer ?")) return;
+
+        // 🔹 Compression avant stockage
+        const compressed = LZString.compressToUTF16(JSON.stringify(importedState));
+        localStorage.setItem("locadan_state_compressed", compressed);
+        alert("✅ Données importées avec succès ! Rechargement...");
+        location.reload();
+      } catch (err) {
+        alert("Erreur lors de l'importation du fichier : " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+</script>
+<script>
+window.addEventListener("load", () => {
+  const compressed = localStorage.getItem("locadan_state_compressed");
+  if (compressed) {
+    try {
+      const json = LZString.decompressFromUTF16(compressed);
+      const state = JSON.parse(json);
+      localStorage.setItem("locadan_state", JSON.stringify(state));
+      console.log("✅ Données décompressées avec succès");
+    } catch (e) {
+      console.warn("Erreur lors de la décompression :", e);
+    }
+  }
+});
+</script>
+<!-- Compression LZString (librairie publique) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+
+<script>
+
+/* ===== IMPORTATION COMPRESSÉE ===== */
+function importData() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json";
+  input.onchange = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+   reader.onload = (e) => {
+  try {
+    const importedState = JSON.parse(e.target.result);
+    if (!confirm("Importer ces données remplacera les données actuelles. Continuer ?")) return;
+
+    // Remplacement immédiat du state
+    state = importedState;
+
+    // Compression et stockage
+    const compressed = LZString.compressToUTF16(JSON.stringify(importedState));
+    localStorage.setItem("locadan_state_compressed", compressed);
+
+    // Re-render des sections
+    renderBiens();
+    renderLocataires();
+    renderBaux();
+    renderPaiements();
+    renderRapports();
+
+    alert("✅ Données importées et affichées avec succès !");
+  } catch (err) {
+    alert("Erreur lors de l'importation du fichier : " + err.message);
+  }
+};
+ reader.readAsText(file);
+  };
+  input.click();
+} 
+
+/* ===== DÉCOMPRESSION AUTOMATIQUE AU DÉMARRAGE ===== */
+window.addEventListener("load", () => {
+  const compressed = localStorage.getItem("locadan_state_compressed");
+  if (compressed) {
+    try {
+      const json = LZString.decompressFromUTF16(compressed);
+      const state = JSON.parse(json);
+      localStorage.setItem("locadan_state", JSON.stringify(state));
+      console.log("✅ Données décompressées avec succès");
+    } catch (e) {
+      console.warn("Erreur lors de la décompression :", e);
+    }
+  }
+});
+</script>
+
+<!-- ===== THEME (coller juste avant </body>) ===== -->
+<style>
+/* Styles pour le "dark" mode via data-theme sur <html> */
+html[data-theme="dark"] {
+  background-color: #0f172a;
+  color: #e6eef8;
+}
+html[data-theme="dark"] .card {
+  background-color: #0f172a;
+  color: #e6eef8;
+  border-color: #233044;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] table {
+  background-color: #111827;
+  color: #e6eef8;
+  border: 1px solid #2b3746;
+}
+html[data-theme="dark"] nav button { background: #14213d; color:#e6eef8; }
+html[data-theme="dark"] header, html[data-theme="dark"] .topbar { background: #0b2340 !important; }
+</style>
+
+<script>
+</script>
+<!-- ===== FIN THEME ===== -->
+</body>
+</html>
